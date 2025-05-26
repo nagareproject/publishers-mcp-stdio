@@ -1,0 +1,2 @@
+[nagare.publishers]
+mcp-stdio = nagare.publishers.mcp_stdio:Publisher
