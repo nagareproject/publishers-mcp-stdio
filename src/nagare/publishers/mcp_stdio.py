@@ -16,6 +16,14 @@ class Publisher(publisher.Publisher):
     def _serve(self, app, services_service, **params):
         try:
             for line in sys.stdin:
-                services_service(self.start_handle_request, app, stdin=line.rstrip())
+                data = services_service(self.start_handle_request, app, stdin=line.rstrip())
+                if data is None:
+                    continue
+
+                for chunk in [data] if isinstance(data, bytes) else data:
+                    sys.stdout.buffer.write(chunk)
+
+                sys.stdout.buffer.write(b'\n')
+                sys.stdout.buffer.flush()
         except KeyboardInterrupt:
             return 0
