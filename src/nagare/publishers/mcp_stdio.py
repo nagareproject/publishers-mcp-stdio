@@ -9,6 +9,9 @@
 
 import sys
 
+from webob.request import Request
+from webob.response import Response
+
 from nagare.server import publisher
 
 
@@ -16,14 +19,18 @@ class Publisher(publisher.Publisher):
     def _serve(self, app, services_service, **params):
         try:
             for line in sys.stdin:
-                data = services_service(self.start_handle_request, app, stdin=line.rstrip())
-                if data is None:
-                    continue
+                response = services_service(
+                    self.start_handle_request,
+                    app,
+                    response=Response(content_type='application/json'),
+                    request=Request(
+                        {}, headers={'accept': 'application/json'}, method='POST', path_info='', text=line.rstrip()
+                    ),
+                )
 
-                for chunk in [data] if isinstance(data, bytes) else data:
-                    sys.stdout.buffer.write(chunk)
-
-                sys.stdout.buffer.write(b'\n')
-                sys.stdout.buffer.flush()
+                if response.body:
+                    sys.stdout.buffer.write(response.body)
+                    sys.stdout.buffer.write(b'\n')
+                    sys.stdout.buffer.flush()
         except KeyboardInterrupt:
             return 0

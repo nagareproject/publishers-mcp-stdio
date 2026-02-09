@@ -20,7 +20,7 @@ description = 'STDIO MCP server'
 authors = [{ name = 'Net-ng' }, { email = 'contact@net-ng.com' }]
 license = { file = 'LICENSE.txt' }
 requires-python = '>=3.11'
-dependencies = ['nagare-server']
+dependencies = ['nagare-server', 'webob']
 
 [project.readme]
 file = 'README.rst'
